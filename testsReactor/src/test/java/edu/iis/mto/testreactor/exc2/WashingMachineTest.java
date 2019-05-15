@@ -30,7 +30,7 @@ public class WashingMachineTest {
     public void init() {
         washingMachine = new WashingMachine(dirtDetector, engine, waterPump);
         laundryBatch = LaundryBatch.builder().withWeightKg(6).withType(Material.COTTON).build();
-        programConfiguration = ProgramConfiguration.builder().withProgram(Program.AUTODETECT).withSpin(false).build();
+        programConfiguration = ProgramConfiguration.builder().withProgram(Program.AUTODETECT).withSpin(true).build();
         when(dirtDetector.detectDirtDegree(any())).thenReturn(new Percentage(3));
     }
 
@@ -82,8 +82,22 @@ public class WashingMachineTest {
     public void shouldThrowIllegalArgumentExceptionAfterMinusValueCreatingPercentage() {
         new Percentage(-10);
     }
+
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowIllegalArgumentExceptionAfterGreaterThen100ValueCreatingPercentage() {
         new Percentage(101);
+    }
+
+    @Test
+    public void shouldEngineUseSpinWhenIsSetInProgramConfiguration() {
+        washingMachine.start(laundryBatch, programConfiguration);
+        verify(engine, atLeastOnce()).spin();
+    }
+
+    @Test
+    public void shouldEngineNotUseSpinWhenIsNotSetInProgramConfiguration() {
+        programConfiguration = ProgramConfiguration.builder().withProgram(Program.AUTODETECT).withSpin(false).build();
+        washingMachine.start(laundryBatch, programConfiguration);
+        verify(engine, never()).spin();
     }
 }
