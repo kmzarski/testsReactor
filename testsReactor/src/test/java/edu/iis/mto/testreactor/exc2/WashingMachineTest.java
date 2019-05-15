@@ -54,8 +54,6 @@ public class WashingMachineTest {
     @Test
     public void shouldUseDetectDirtWhenProgramIsAutodetect(){
         laundryBatch = LaundryBatch.builder().withWeightKg(6).withType(Material.COTTON).build();
-
-        LaundryStatus laundryStatus = washingMachine.start(laundryBatch, programConfiguration);
         verify(dirtDetector,atLeastOnce()).detectDirtDegree(laundryBatch);
         assertThat(true,is(true));
     }
