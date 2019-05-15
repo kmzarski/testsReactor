@@ -127,4 +127,16 @@ public class WashingMachineTest {
         assertThat(laundryStatus.getResult(), is(expectedLaundryStatus.getResult()));
     }
 
+    @Test
+    public void shouldReturnGoodProgramForAutodetectedAndPercentageBiggerThenAVERAGE_DEGREE() {
+        when(dirtDetector.detectDirtDegree(any())).thenReturn(new Percentage(41));
+        washingMachine.start(laundryBatch, programConfiguration);
+        verify(engine, atLeastOnce()).runWashing(Program.LONG.getTimeInMinutes());
+    }
+    @Test
+    public void shouldReturnGoodProgramForAutodetectedAndPercentageLoverThenAVERAGE_DEGREE() {
+        when(dirtDetector.detectDirtDegree(any())).thenReturn(new Percentage(39));
+        washingMachine.start(laundryBatch, programConfiguration);
+        verify(engine, atLeastOnce()).runWashing(Program.MEDIUM.getTimeInMinutes());
+    }
 }
