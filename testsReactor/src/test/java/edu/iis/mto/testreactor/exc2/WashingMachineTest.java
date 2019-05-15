@@ -24,15 +24,14 @@ public class WashingMachineTest {
     private WashingMachine washingMachine;
     private LaundryBatch laundryBatch;
     private ProgramConfiguration programConfiguration;
-    private Percentage percentage;
+
 
     @Before
     public void init() {
         washingMachine = new WashingMachine(dirtDetector, engine, waterPump);
         laundryBatch = LaundryBatch.builder().withWeightKg(6).withType(Material.COTTON).build();
         programConfiguration = ProgramConfiguration.builder().withProgram(Program.AUTODETECT).withSpin(false).build();
-        percentage = new Percentage(3);
-        when(dirtDetector.detectDirtDegree(any())).thenReturn(percentage);
+        when(dirtDetector.detectDirtDegree(any())).thenReturn(new Percentage(3));
     }
 
     @Test
@@ -69,8 +68,11 @@ public class WashingMachineTest {
         assertThat(laundryStatus.getResult(), is(expectedLaundryStatus.getResult()));
     }
     @Test
-    public void shouldUsePompEngineMethod(){
-        LaundryStatus laundryStatus = washingMachine.start(laundryBatch, programConfiguration);
+    public void shouldUsePompAndEngineMethodAfterWashingMachineStart(){
+      washingMachine.start(laundryBatch, programConfiguration);
+        verify(waterPump,atLeastOnce()).pour(6.0);
+        verify(engine,atLeastOnce()).runWashing(50);
+        verify(waterPump,atLeastOnce()).release();
     }
 
 }
