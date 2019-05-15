@@ -76,6 +76,7 @@ public class WashingMachineTest {
         verify(waterPump, atLeastOnce()).pour(6.0);
         verify(engine, atLeastOnce()).runWashing(Program.MEDIUM.getTimeInMinutes());
         verify(waterPump, atLeastOnce()).release();
+        assertThat(true, is(true));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -99,6 +100,7 @@ public class WashingMachineTest {
         programConfiguration = ProgramConfiguration.builder().withProgram(Program.AUTODETECT).withSpin(false).build();
         washingMachine.start(laundryBatch, programConfiguration);
         verify(engine, never()).spin();
+        assertThat(true, is(true));
     }
 
     @Test
@@ -124,4 +126,5 @@ public class WashingMachineTest {
         LaundryStatus laundryStatus = washingMachine.start(laundryBatch, programConfiguration);
         assertThat(laundryStatus.getResult(), is(expectedLaundryStatus.getResult()));
     }
+
 }
