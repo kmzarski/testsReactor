@@ -29,6 +29,7 @@ public class WashingMachineTest {
     @Before
     public void init() {
         washingMachine = new WashingMachine(dirtDetector, engine, waterPump);
+        laundryBatch = LaundryBatch.builder().withWeightKg(6).withType(Material.COTTON).build();
         programConfiguration = ProgramConfiguration.builder().withProgram(Program.AUTODETECT).withSpin(false).build();
         percentage = new Percentage(3);
         when(dirtDetector.detectDirtDegree(any())).thenReturn(percentage);
@@ -53,13 +54,12 @@ public class WashingMachineTest {
     }
     @Test
     public void shouldUseDetectDirtWhenProgramIsAutodetect(){
-        laundryBatch = LaundryBatch.builder().withWeightKg(6).withType(Material.COTTON).build();
+        washingMachine.start(laundryBatch, programConfiguration);
         verify(dirtDetector,atLeastOnce()).detectDirtDegree(laundryBatch);
         assertThat(true,is(true));
     }
     @Test
     public void shouldReturnSuccesWithNormalWeight() {
-        laundryBatch = LaundryBatch.builder().withWeightKg(6).withType(Material.COTTON).build();
         LaundryStatus expectedLaundryStatus = LaundryStatus.builder()
                 .withResult(Result.SUCCESS)
                 .withRunnedProgram(Program.AUTODETECT)
@@ -67,6 +67,10 @@ public class WashingMachineTest {
 
         LaundryStatus laundryStatus = washingMachine.start(laundryBatch, programConfiguration);
         assertThat(laundryStatus.getResult(), is(expectedLaundryStatus.getResult()));
+    }
+    @Test
+    public void shouldUsePompEngineMethod(){
+        LaundryStatus laundryStatus = washingMachine.start(laundryBatch, programConfiguration);
     }
 
 }
