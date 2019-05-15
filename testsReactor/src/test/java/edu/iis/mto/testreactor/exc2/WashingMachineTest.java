@@ -74,7 +74,7 @@ public class WashingMachineTest {
     public void shouldUsePompAndEngineMethodAfterWashingMachineStart() {
         washingMachine.start(laundryBatch, programConfiguration);
         verify(waterPump, atLeastOnce()).pour(6.0);
-        verify(engine, atLeastOnce()).runWashing(50);
+        verify(engine, atLeastOnce()).runWashing(Program.MEDIUM.getTimeInMinutes());
         verify(waterPump, atLeastOnce()).release();
     }
 
@@ -99,5 +99,29 @@ public class WashingMachineTest {
         programConfiguration = ProgramConfiguration.builder().withProgram(Program.AUTODETECT).withSpin(false).build();
         washingMachine.start(laundryBatch, programConfiguration);
         verify(engine, never()).spin();
+    }
+
+    @Test
+    public void shouldReturnTooHeavyWhenIsOverloadForWoolMaterial() {
+        laundryBatch = LaundryBatch.builder().withWeightKg(6).withType(Material.WOOL).build();
+        LaundryStatus expectedLaundryStatus = LaundryStatus.builder()
+                .withResult(Result.FAILURE)
+                .withRunnedProgram(Program.AUTODETECT)
+                .build();
+
+        LaundryStatus laundryStatus = washingMachine.start(laundryBatch, programConfiguration);
+        assertThat(laundryStatus.getResult(), is(expectedLaundryStatus.getResult()));
+    }
+
+    @Test
+    public void shouldReturnIsNotOverloadForWoolMaterial() {
+        laundryBatch = LaundryBatch.builder().withWeightKg(4).withType(Material.WOOL).build();
+        LaundryStatus expectedLaundryStatus = LaundryStatus.builder()
+                .withResult(Result.SUCCESS)
+                .withRunnedProgram(Program.AUTODETECT)
+                .build();
+
+        LaundryStatus laundryStatus = washingMachine.start(laundryBatch, programConfiguration);
+        assertThat(laundryStatus.getResult(), is(expectedLaundryStatus.getResult()));
     }
 }
