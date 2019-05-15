@@ -51,12 +51,14 @@ public class WashingMachineTest {
 
         assertThat(laundryStatus.getErrorCode(), is(expectedLaundryStatus.getErrorCode()));
     }
+
     @Test
-    public void shouldUseDetectDirtWhenProgramIsAutodetect(){
+    public void shouldUseDetectDirtWhenProgramIsAutodetect() {
         washingMachine.start(laundryBatch, programConfiguration);
-        verify(dirtDetector,atLeastOnce()).detectDirtDegree(laundryBatch);
-        assertThat(true,is(true));
+        verify(dirtDetector, atLeastOnce()).detectDirtDegree(laundryBatch);
+        assertThat(true, is(true));
     }
+
     @Test
     public void shouldReturnSuccesWithNormalWeight() {
         LaundryStatus expectedLaundryStatus = LaundryStatus.builder()
@@ -67,12 +69,21 @@ public class WashingMachineTest {
         LaundryStatus laundryStatus = washingMachine.start(laundryBatch, programConfiguration);
         assertThat(laundryStatus.getResult(), is(expectedLaundryStatus.getResult()));
     }
+
     @Test
-    public void shouldUsePompAndEngineMethodAfterWashingMachineStart(){
-      washingMachine.start(laundryBatch, programConfiguration);
-        verify(waterPump,atLeastOnce()).pour(6.0);
-        verify(engine,atLeastOnce()).runWashing(50);
-        verify(waterPump,atLeastOnce()).release();
+    public void shouldUsePompAndEngineMethodAfterWashingMachineStart() {
+        washingMachine.start(laundryBatch, programConfiguration);
+        verify(waterPump, atLeastOnce()).pour(6.0);
+        verify(engine, atLeastOnce()).runWashing(50);
+        verify(waterPump, atLeastOnce()).release();
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowIllegalArgumentExceptionAfterMinusValueCreatingPercentage() {
+        new Percentage(-10);
+    }
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowIllegalArgumentExceptionAfterGreaterThen100ValueCreatingPercentage() {
+        new Percentage(101);
+    }
 }
