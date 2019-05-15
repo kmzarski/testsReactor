@@ -3,7 +3,7 @@ package edu.iis.mto.testreactor.exc2;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import org.hamcrest.Matchers;
 import org.junit.Before;
@@ -51,7 +51,14 @@ public class WashingMachineTest {
 
         assertThat(laundryStatus.getErrorCode(), is(expectedLaundryStatus.getErrorCode()));
     }
+    @Test
+    public void shouldUseDetectDirtWhenProgramIsAutodetect(){
+        laundryBatch = LaundryBatch.builder().withWeightKg(6).withType(Material.COTTON).build();
 
+        LaundryStatus laundryStatus = washingMachine.start(laundryBatch, programConfiguration);
+        verify(dirtDetector,atLeastOnce()).detectDirtDegree(laundryBatch);
+        assertThat(true,is(true));
+    }
     @Test
     public void shouldReturnSuccesWithNormalWeight() {
         laundryBatch = LaundryBatch.builder().withWeightKg(6).withType(Material.COTTON).build();
@@ -63,4 +70,5 @@ public class WashingMachineTest {
         LaundryStatus laundryStatus = washingMachine.start(laundryBatch, programConfiguration);
         assertThat(laundryStatus.getResult(), is(expectedLaundryStatus.getResult()));
     }
+
 }
